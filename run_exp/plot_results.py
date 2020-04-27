@@ -8,11 +8,12 @@ NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
-VIDEO_LEN = 64
+VIDEO_LEN = 47
 VIDEO_BIT_RATE = [350, 600, 1000, 2000, 3000]
 COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired 
 SIM_DP = 'sim_dp'
-SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
+# SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
+SCHEMES = ['sim_rl']
 
 
 def main():
@@ -83,16 +84,20 @@ def main():
 				raw_reward_all[scheme][log_file[len('log_' + str(scheme) + '_'):]] = reward
 				break
 
+        print SCHEMES
+        print time_all
+        
 	# ---- ---- ---- ----
 	# Reward records
 	# ---- ---- ---- ----
-		
+	
 	log_file_all = []
 	reward_all = {}
 	for scheme in SCHEMES:
 		reward_all[scheme] = []
 
 	for l in time_all[SCHEMES[0]]:
+                print l
 		schemes_check = True
 		for scheme in SCHEMES:
 			if l not in time_all[scheme] or len(time_all[scheme][l]) < VIDEO_LEN:
@@ -108,7 +113,11 @@ def main():
 
 	mean_rewards = {}
 	for scheme in SCHEMES:
-		mean_rewards[scheme] = np.mean(reward_all[scheme])
+                print scheme
+                print reward_all[scheme]
+                avg = np.mean(reward_all[scheme])
+                print avg
+		mean_rewards[scheme] = avg
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
@@ -134,12 +143,20 @@ def main():
 	# CDF 
 	# ---- ---- ---- ----
 
+        print "---- ---- ---- ----"
+        print "CDF "
+	print "---- ---- ---- ----"
+        
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 
 	for scheme in SCHEMES:
+                print reward_all[scheme]
 		values, base = np.histogram(reward_all[scheme], bins=NUM_BINS)
+                print values, base
 		cumulative = np.cumsum(values)
+                cumulative = cumulative / 2
+                print cumulative
 		ax.plot(base[:-1], cumulative)	
 
 	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
